@@ -15,6 +15,7 @@ using Prism.Commands;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
 using Splat;
+using WolvenKit.App.ViewModels.Red;
 using WolvenKit.Common;
 using WolvenKit.Common.Services;
 using WolvenKit.Core.Interfaces;
@@ -375,12 +376,33 @@ namespace WolvenKit.ViewModels.Shell
                     }
 
                     var name = !string.IsNullOrEmpty(propertyInfo.RedName) ? propertyInfo.RedName : propertyInfo.Name;
-                    Properties.Add(new ChunkViewModel(redClass.GetProperty(name), this, propertyInfo.RedName, false, isreadonly));
+                    AddProperty(redClass.GetProperty(name), propertyInfo.RedName);
                 }
 
                 foreach (var dp in dps)
                 {
-                    Properties.Add(new ChunkViewModel(redClass.GetProperty(dp), this, dp, false, isreadonly));
+                    AddProperty(redClass.GetProperty(dp), dp);
+                }
+
+                void AddProperty(IRedType value, string name)
+                {
+                    ChunkViewModel vm;
+
+                    if (value is IRedArray redArray)
+                    {
+                        vm = new RedArrayViewModel(redArray, this, name);
+                    }
+                    else if (value is RedBaseClass cls)
+                    {
+                        vm = new RedClassViewModel(cls, this, name);
+                    }
+                    else
+                    {
+                        vm = new ChunkViewModel(value, this, name);
+                    }
+
+                    vm.IsReadOnly = isreadonly;
+                    Properties.Add(vm);
                 }
             }
             else if (obj is SerializationDeferredDataBuffer sddb)

@@ -10,6 +10,7 @@ using ReactiveUI.Fody.Helpers;
 using Splat;
 using Syncfusion.UI.Xaml.TreeView.Engine;
 using Syncfusion.Windows.Shared;
+using WolvenKit.App.ViewModels.Red;
 using WolvenKit.Common;
 using WolvenKit.Common.FNV1A;
 using WolvenKit.Functionality.Controllers;
@@ -98,7 +99,7 @@ namespace WolvenKit.ViewModels.Documents
             set => _chunks = value;
         }
 
-        public virtual ChunkViewModel GenerateChunks() => new(_data, this);
+        public virtual ChunkViewModel GenerateChunks() => new RedClassViewModel((RedBaseClass)_data, this);
 
         [Reactive] public ChunkViewModel SelectedChunk { get; set; }
 

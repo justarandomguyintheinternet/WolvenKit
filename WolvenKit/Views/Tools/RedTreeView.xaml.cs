@@ -10,6 +10,8 @@ using WolvenKit.RED4.Types;
 using WolvenKit.ViewModels.Documents;
 using WolvenKit.ViewModels.Shell;
 using WolvenKit.Core.Interfaces;
+using Syncfusion.UI.Xaml.TreeView.Engine;
+using System.Reflection;
 
 namespace WolvenKit.Views.Tools
 {
@@ -18,7 +20,22 @@ namespace WolvenKit.Views.Tools
     /// </summary>
     public partial class RedTreeView : UserControl
     {
-        public RedTreeView() => InitializeComponent();
+        public RedTreeView()
+        {
+            InitializeComponent();
+
+            var childClasses = Assembly.GetAssembly(typeof(ChunkViewModel)).GetTypes().Where(myType => myType.IsAssignableTo(typeof(ISelectableTreeViewItemModel)));
+            foreach (var childClass in childClasses)
+            {
+                TreeView.HierarchyPropertyDescriptors.Add(new HierarchyPropertyDescriptor
+                {
+                    ChildPropertyName = "TVProperties",
+                    IsExpandedPropertyName = "IsExpanded",
+                    IsSelectedPropertyName = "IsSelected",
+                    TargetType = childClass
+                });
+            }
+        }
 
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.Register(nameof(ItemsSource), typeof(object), typeof(RedTreeView));

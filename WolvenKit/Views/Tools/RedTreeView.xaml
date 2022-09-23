@@ -730,17 +730,5 @@
                 </Border>
             </DataTemplate>
         </syncfusion:SfTreeView.DragPreviewTemplate>
-        <syncfusion:SfTreeView.HierarchyPropertyDescriptors>
-            <treeViewEngine:HierarchyPropertyDescriptor
-                ChildPropertyName="TVProperties"
-                IsExpandedPropertyName="IsExpanded"
-                IsSelectedPropertyName="IsSelected"
-                TargetType="{x:Type shell:ChunkViewModel}" />
-            <treeViewEngine:HierarchyPropertyDescriptor
-                ChildPropertyName="TVProperties"
-                IsExpandedPropertyName="IsExpanded"
-                IsSelectedPropertyName="IsSelected"
-                TargetType="{x:Type shell:GroupedChunkViewModel}" />
-        </syncfusion:SfTreeView.HierarchyPropertyDescriptors>
     </syncfusion:SfTreeView>
 </UserControl>

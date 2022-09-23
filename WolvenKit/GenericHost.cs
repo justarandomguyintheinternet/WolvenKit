@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using ReactiveUI;
 using Splat;
 using Splat.Microsoft.Extensions.DependencyInjection;
+using WolvenKit.App.ViewModels.Red;
 using WolvenKit.Common;
 using WolvenKit.Common.Interfaces;
 using WolvenKit.Common.Services;
@@ -24,10 +25,12 @@ using WolvenKit.ViewModels.Shell;
 using WolvenKit.ViewModels.Tools;
 using WolvenKit.ViewModels.Wizards;
 using WolvenKit.Views.Dialogs;
+using WolvenKit.Views.Editors;
 using WolvenKit.Views.HomePage;
 using WolvenKit.Views.HomePage.Pages;
 using WolvenKit.Views.Shell;
 using WolvenKit.Views.Tools;
+using WolvenKit.Views.Types;
 using WolvenKit.Views.Wizards;
 
 namespace WolvenKit
@@ -212,6 +215,8 @@ namespace WolvenKit
 
                     #endregion
 
+                    services.AddTransient<IViewFor<RedClassViewModel>, RedClassView>();
+                    services.AddTransient<IViewFor<RedArrayViewModel>, RedArrayEditorView>();
                 })
                 .UseEnvironment(Environments.Development);
     }
