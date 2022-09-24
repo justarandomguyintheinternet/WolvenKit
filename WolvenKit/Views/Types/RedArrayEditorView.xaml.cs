@@ -28,6 +28,9 @@ public partial class RedArrayEditorView
             this.BindCommand(ViewModel, viewModel => viewModel.AddItemToCollectionCommand, view => view.AddItemToCollectionButton)
                 .DisposeWith(disposables);
 
+            // this.BindCommand(ViewModel, viewModel => viewModel.DeleteAllFromCollectionCommand, view => view.DeleteAllItemsConfirmButton)
+            //     .DisposeWith(disposables);
+
             this.OneWayBind(ViewModel, viewModel => viewModel.DisplayProperties, view => view.ItemsListView.ItemsSource)
                 .DisposeWith(disposables);
         });
