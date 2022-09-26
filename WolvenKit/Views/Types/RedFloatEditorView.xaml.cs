@@ -12,22 +12,26 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ReactiveUI;
-using WolvenKit.App.ViewModels.Red;
-using WolvenKit.Helpers;
 
 namespace WolvenKit.Views.Types;
 /// <summary>
-/// Interaktionslogik für RedClassView.xaml
+/// Interaktionslogik für RedFloatEditorView.xaml
 /// </summary>
-public partial class RedClassView
+public partial class RedFloatEditorView
 {
-    public RedClassView()
+    public RedFloatEditorView()
     {
         InitializeComponent();
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, viewModel => viewModel.DisplayProperties, view => view.PropertiesListBox.ItemsSource)
+            this.Bind(ViewModel, vm => vm.Name, v => v.RowIndexTextBlock.Text)
+                .DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.XPath, v => v.RowIndexTextBlock.ToolTip)
+                .DisposeWith(disposables);
+
+            this.Bind(ViewModel, vm => vm.Data, v => v.ContentTextBox.Text)
                 .DisposeWith(disposables);
         });
     }

@@ -45,6 +45,7 @@ namespace WolvenKit
                     var resolver = Locator.CurrentMutable;
                     resolver.InitializeSplat();
                     resolver.InitializeReactiveUI();
+                    RegisterViews(resolver);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -214,10 +215,20 @@ namespace WolvenKit
                     services.AddTransient<IViewFor<ProjectWizardViewModel>, ProjectWizardView>();
 
                     #endregion
-
-                    services.AddTransient<IViewFor<RedClassViewModel>, RedClassView>();
-                    services.AddTransient<IViewFor<RedArrayViewModel>, RedArrayEditorView>();
                 })
                 .UseEnvironment(Environments.Development);
+
+        private static void RegisterViews(IMutableDependencyResolver resolver)
+        {
+            resolver.Register(() => new RedClassView(), typeof(IViewFor<RedClassViewModel>));
+            resolver.Register(() => new RedCNameEditorView(), typeof(IViewFor<RedCNameViewModel>));
+            resolver.Register(() => new RedFloatEditorView(), typeof(IViewFor<RedFloatViewModel>));
+
+            resolver.Register(() => new RedArrayEditorView(), typeof(IViewFor<RedArrayViewModel>));
+            resolver.Register(() => new SimpleRedArrayEditorView(), typeof(IViewFor<RedArrayViewModel>), "Simple");
+
+            resolver.Register(() => new RedCHandleEditorView(), typeof(IViewFor<RedCHandleViewModel>));
+            resolver.Register(() => new SimpleRedCHandleEditorView(), typeof(IViewFor<RedCHandleViewModel>), "Simple");
+        }
     }
 }

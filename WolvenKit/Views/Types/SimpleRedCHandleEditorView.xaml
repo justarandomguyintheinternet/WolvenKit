@@ -1,0 +1,63 @@
+<reactiveUi:ReactiveUserControl
+    x:Class="WolvenKit.Views.Types.SimpleRedCHandleEditorView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:reactiveUi="http://reactiveui.net"
+    xmlns:red="clr-namespace:WolvenKit.App.ViewModels.Red;assembly=WolvenKit.App"
+    d:DataContext="{d:DesignInstance red:RedCHandleViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    x:TypeArguments="red:RedCHandleViewModel"
+    mc:Ignorable="d">
+    <Border BorderBrush="{StaticResource BorderAlt}" BorderThickness="1">
+        <Grid>
+            <Grid.Resources>
+                <SolidColorBrush x:Key="RedTypeColor" Color="{StaticResource WolvenKitTanColor}" />
+            </Grid.Resources>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" SharedSizeGroup="IndexSizeGroup" />
+                <ColumnDefinition Width="1" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                x:Name="RowIndexTextBlock"
+                Grid.Column="0"
+                Margin="6"
+                VerticalAlignment="Center"
+                Text="{Binding Name, Mode=OneTime}"
+                TextAlignment="Center"
+                ToolTip="{Binding XPath, Mode=OneTime}" />
+            <GridSplitter
+                Grid.Column="1"
+                HorizontalAlignment="Stretch"
+                Background="{StaticResource BorderAlt}" />
+            <TextBlock
+                Grid.Column="2"
+                Margin="6,0,4,1"
+                VerticalAlignment="Center"
+                Foreground="{StaticResource RedTypeColor}"
+                Text="{Binding Type, Mode=OneTime}" />
+            <TextBlock
+                Grid.Column="3"
+                Margin="0,0,4,1"
+                VerticalAlignment="Center"
+                Foreground="White"
+                Text="{Binding Descriptor}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Descriptor}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+    </Border>
+</reactiveUi:ReactiveUserControl>

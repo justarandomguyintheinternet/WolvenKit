@@ -3,6 +3,9 @@ using System;
 using System.Linq;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.Input;
+using DynamicData.Binding;
+using ReactiveUI;
+using ReactiveUI.Fody.Helpers;
 using Splat;
 using WolvenKit.App.Interfaces;
 using WolvenKit.RED4.Types;
@@ -16,12 +19,35 @@ public partial class RedArrayViewModel : ChunkViewModel, IRedCollectionViewModel
 {
     private IRedArray CastedData => (IRedArray)Data;
 
+    // [Reactive] public new ObservableCollectionExtended<ChunkViewModel> DisplayProperties { get; set; } = new();
+
     public RedArrayViewModel() : base()
     {
 
     }
 
-    public RedArrayViewModel(IRedArray redArray, ChunkViewModel parent, string name) : base(redArray, parent, name) { }
+    public RedArrayViewModel(IRedArray redArray, ChunkViewModel parent = null, string name = null, bool lazy = false, bool isReadOnly = false) : base(redArray, parent, name, lazy, isReadOnly)
+    {
+        // RefreshDisplayProperties();
+    }
+
+    private void RefreshDisplayProperties()
+    {
+        var disposable = DisplayProperties.SuspendNotifications();
+
+        DisplayProperties.Clear();
+        for (int i = 0; i < CastedData.Count; i++)
+        {
+            if (CastedData[i] is not IRedType redItem)
+            {
+                throw new Exception();
+            }
+
+            DisplayProperties.Add(CreateChunkViewModel(redItem));
+        }
+
+        disposable.Dispose();
+    }
 
     [RelayCommand]
     private void AddItemToCollection()
@@ -79,6 +105,8 @@ public partial class RedArrayViewModel : ChunkViewModel, IRedCollectionViewModel
                 DialogHandler = handler
             });
         }
+
+        // RefreshDisplayProperties();
     }
 
     [RelayCommand]

@@ -10,16 +10,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ReactiveUI;
-using WolvenKit.Helpers;
 
-namespace WolvenKit.Views.Editors;
+namespace WolvenKit.Views.Types;
 /// <summary>
-/// Interaktionslogik für RedTypeView2.xaml
+/// Interaktionslogik für SimpleRedArrayEditorView.xaml
 /// </summary>
-public partial class RedTypeView2
+public partial class SimpleRedArrayEditorView
 {
-    public RedTypeView2()
+    public SimpleRedArrayEditorView()
     {
         InitializeComponent();
     }

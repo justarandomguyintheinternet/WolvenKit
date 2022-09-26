@@ -339,7 +339,7 @@ namespace WolvenKit.ViewModels.Shell
             {
                 for (var i = 0; i < PropertyCount; i++)
                 {
-                    Properties.Add(new ChunkViewModel((IRedType)ary[i], this, null, false, isreadonly));
+                    Properties.Add(CreateChunkViewModel((IRedType)ary[i], null, false, isreadonly));
                 }
             }
             else if (obj is CKeyValuePair kvp)
@@ -376,33 +376,12 @@ namespace WolvenKit.ViewModels.Shell
                     }
 
                     var name = !string.IsNullOrEmpty(propertyInfo.RedName) ? propertyInfo.RedName : propertyInfo.Name;
-                    AddProperty(redClass.GetProperty(name), propertyInfo.RedName);
+                    Properties.Add(CreateChunkViewModel(redClass.GetProperty(name), propertyInfo.RedName, isreadonly));
                 }
 
                 foreach (var dp in dps)
                 {
-                    AddProperty(redClass.GetProperty(dp), dp);
-                }
-
-                void AddProperty(IRedType value, string name)
-                {
-                    ChunkViewModel vm;
-
-                    if (value is IRedArray redArray)
-                    {
-                        vm = new RedArrayViewModel(redArray, this, name);
-                    }
-                    else if (value is RedBaseClass cls)
-                    {
-                        vm = new RedClassViewModel(cls, this, name);
-                    }
-                    else
-                    {
-                        vm = new ChunkViewModel(value, this, name);
-                    }
-
-                    vm.IsReadOnly = isreadonly;
-                    Properties.Add(vm);
+                    Properties.Add(CreateChunkViewModel(redClass.GetProperty(dp), dp, isreadonly));
                 }
             }
             else if (obj is SerializationDeferredDataBuffer sddb)
@@ -534,6 +513,41 @@ namespace WolvenKit.ViewModels.Shell
                 }
             }
             this.RaisePropertyChanged("TVProperties");
+        }
+
+        // ChunkViewModel((IRedType)ary[i], this, null, false, isreadonly)
+        protected ChunkViewModel CreateChunkViewModel(IRedType value, string name = null, bool lazy = false, bool isReadOnly = false)
+        {
+            ChunkViewModel vm;
+
+            if (value is IRedArray redArray)
+            {
+                vm = new RedArrayViewModel(redArray, this, name, lazy, isReadOnly);
+            }
+            else if (value is IRedBaseHandle redHandle)
+            {
+                vm = new RedCHandleViewModel(redHandle, this, name, lazy, isReadOnly);
+            }
+            else if (value is CName cName)
+            {
+                vm = new RedCNameViewModel(cName, this, name, lazy, isReadOnly);
+            }
+            else if (value is CFloat cFloat)
+            {
+                vm = new RedFloatViewModel(cFloat, this, name, lazy, isReadOnly);
+            }
+            else if (value is RedBaseClass cls)
+            {
+                vm = new RedClassViewModel(cls, this, name, lazy, isReadOnly);
+            }
+            else
+            {
+                vm = new ChunkViewModel(value, this, name, lazy, isReadOnly);
+            }
+
+            vm.IsReadOnly = isReadOnly;
+
+            return vm;
         }
 
         [Reactive] public bool IsSelected { get; set; }
@@ -2357,16 +2371,13 @@ namespace WolvenKit.ViewModels.Shell
             {
                 if (ResolvedData is IRedArray ira && ira.InnerType.IsInstanceOfType(item))
                 {
-                    return InsertArrayItem(ira, index, item);
+                    InsertArrayItem(ira, index, item);
                 }
-
-                // Not sure why, but seems to be important^^
-                if (Data is IRedArray ira2 && ira2.InnerType.IsInstanceOfType(item))
+                else if (Data is IRedArray ira2 && ira2.InnerType.IsInstanceOfType(item))
                 {
-                    return InsertArrayItem(ira2, index, item);
+                    InsertArrayItem(ira2, index, item);
                 }
-
-                if (ResolvedData is IRedLegacySingleChannelCurve curve && curve.ElementType.IsAssignableTo(item.GetType()))
+                else if (ResolvedData is IRedLegacySingleChannelCurve curve && curve.ElementType.IsAssignableTo(item.GetType()))
                 {
                     curve.Add(0F, item);
                 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Reactive.Disposables;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,23 +11,27 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ReactiveUI;
+using WolvenKit.App.Interfaces;
 using WolvenKit.App.ViewModels.Red;
 using WolvenKit.Helpers;
+using WolvenKit.RED4.Types;
 
 namespace WolvenKit.Views.Types;
 /// <summary>
-/// Interaktionslogik für RedClassView.xaml
+/// Interaktionslogik für RedCNameEditorView.xaml
 /// </summary>
-public partial class RedClassView
+public partial class RedCNameEditorView
 {
-    public RedClassView()
+    public RedCNameEditorView()
     {
         InitializeComponent();
 
         this.WhenActivated(disposables =>
         {
-            this.OneWayBind(ViewModel, viewModel => viewModel.DisplayProperties, view => view.PropertiesListBox.ItemsSource)
-                .DisposeWith(disposables);
+            if (ViewModel is { Parent: IRedCollectionViewModel })
+            {
+
+            }
         });
     }
 }
