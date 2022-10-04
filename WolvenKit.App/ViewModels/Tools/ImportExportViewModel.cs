@@ -422,7 +422,6 @@ public ImportExportViewModel(
 
                 case { Properties: OpusExportArgs opusExportArgs }:
                     InitCollectionEditorForOpus(argType, opusExportArgs);
-                    Trace.WriteLine(opusExportArgs.ModFolderPath + opusExportArgs.RawFolderPath);
                     break;
             }
         }
@@ -722,16 +721,6 @@ public ImportExportViewModel(
             var fi = new FileInfo(item.FullName);
             if (fi.Exists)
             {
-                if (item.Properties is GltfImportArgs gltfImportArgs)
-                {
-                    gltfImportArgs.Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-
-                    if (_projectManager.ActiveProject is Cp77Project cp77Proj)
-                    {
-                        gltfImportArgs.Archives.Insert(0, new FileSystemArchive(cp77Proj.ModDirectory));
-                    }
-                }
-
                 if (item.Properties is ReImportArgs reImportArgs)
                 {
                     if (!_pluginService.IsInstalled(EPlugin.redmod))
@@ -766,26 +755,7 @@ public ImportExportViewModel(
             {
                 if (item.Properties is MeshExportArgs meshExportArgs)
                 {
-                    meshExportArgs.Archives.Clear();
-                    if (_gameController.GetController() is RED4Controller cp77Controller)
-                    {
-                        meshExportArgs.Archives.AddRange(_archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList());
-                    }
-
-                    if (_projectManager.ActiveProject is Cp77Project cp77Proj)
-                    {
-                        meshExportArgs.Archives.Insert(0, new FileSystemArchive(cp77Proj.ModDirectory));
-                    }
-
                     meshExportArgs.MaterialRepo = _settingsManager.MaterialRepositoryPath;
-                }
-                if (item.Properties is MorphTargetExportArgs morphTargetExportArgs)
-                {
-                    if (_gameController.GetController() is RED4Controller cp77Controller)
-                    {
-                        morphTargetExportArgs.Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-                    }
-                    morphTargetExportArgs.ModFolderPath = _projectManager.ActiveProject.ModDirectory;
                 }
                 if (item.Properties is OpusExportArgs opusExportArgs)
                 {
@@ -797,21 +767,6 @@ public ImportExportViewModel(
                     }
 
                     opusExportArgs.RawFolderPath = proj.RawDirectory;
-                    opusExportArgs.ModFolderPath = proj.ModDirectory;
-                }
-                if (item.Properties is EntityExportArgs entExportArgs)
-                {
-                    if (_gameController.GetController() is RED4Controller cp77Controller)
-                    {
-                        entExportArgs.Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-                    }
-                }
-                if (item.Properties is AnimationExportArgs animationExportArgs)
-                {
-                    if (_gameController.GetController() is RED4Controller cp77Controller)
-                    {
-                        animationExportArgs.Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-                    }
                 }
                 var settings = new GlobalExportArgs().Register(item.Properties as ExportArgs);
                 return _modTools.Export(fi, settings,

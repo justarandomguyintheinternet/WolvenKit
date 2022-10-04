@@ -22,6 +22,7 @@ using WolvenKit.Functionality.Services;
 using WolvenKit.Helpers;
 using WolvenKit.Models;
 using WolvenKit.ProjectManagement.Project;
+using WolvenKit.RED4.Archive;
 using WolvenKit.RED4.CR2W;
 using WolvenKit.RED4.Types;
 using static WolvenKit.RED4.Types.Enums;
@@ -69,6 +70,15 @@ namespace WolvenKit.Functionality.Controllers
             _archiveManager = gameArchiveManager;
             _progressService = progressService;
             _pluginService = pluginService;
+
+            this.WhenAnyValue(x => x._projectManager.ActiveProject).Subscribe(project =>
+            {
+                _archiveManager.ProjectArchive = null;
+                if (project != null && project is Cp77Project cp77Project)
+                {
+                    _archiveManager.ProjectArchive = new FileSystemArchive(cp77Project.ModDirectory);
+                }
+            });
         }
 
         public Task HandleStartup()

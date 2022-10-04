@@ -61,18 +61,14 @@ namespace CP77Tools.Tasks
             //fix to force loading all
             _hashService.GetAllHashes();
 
-            var archives = new List<Archive>();
-
             var outputDir = isDirectory ? inputDirInfo.FullName : inputFileInfo.Directory.FullName;
             if (isDirectory)
             {
-                archives.AddRange(inputDirInfo
-                    .GetFiles("*.archive", SearchOption.AllDirectories)
-                    .Select(_ => _wolvenkitFileService.ReadRed4Archive(_.FullName, _hashService)));
+                _archiveManager.LoadFromFolder(inputDirInfo);
             }
             else
             {
-                archives.Add(_wolvenkitFileService.ReadRed4Archive(inputFileInfo.FullName, _hashService));
+                _archiveManager.LoadArchive(inputFileInfo.FullName);
             }
 
             if (missinghashes)
@@ -81,9 +77,10 @@ namespace CP77Tools.Tasks
                 List<ulong> missing = new();
 
                 _loggerService.Info($"Parsing...");
-                for (var i = 0; i < archives.Count; i++)
+
+                var counter = 0;
+                foreach (var ar in _archiveManager.Archives.Items)
                 {
-                    var ar = archives[i];
                     foreach (var (hash, fileInfoEntry) in ar.Files)
                     {
                         if (fileInfoEntry is FileEntry fe && fe.NameOrHash == hash.ToString())
@@ -96,7 +93,7 @@ namespace CP77Tools.Tasks
                         }
                     }
 
-                    _progressService.Report((i + 1) / (float)archives.Count);
+                    _progressService.Report(++counter / (float)_archiveManager.Archives.Count);
                 }
 
                 // write all used and all missing hashes
@@ -158,7 +155,7 @@ namespace CP77Tools.Tasks
 
             var missingImports = new List<string>();
             // Parallel
-            foreach (var ar in archives)
+            foreach (var ar in _archiveManager.Archives.Items)
             {
                 if (imports || texinfo)
                 {
@@ -173,7 +170,7 @@ namespace CP77Tools.Tasks
                     var importDictionary = new ConcurrentDictionary<ulong, string>();
 
                     // get info
-                    var count = ar.FileCount;
+                    var count = ar.Files.Count;
                     _loggerService.Info($"Exporting {count} bundle entries ");
 
                     Thread.Sleep(1000);
@@ -190,7 +187,7 @@ namespace CP77Tools.Tasks
                         if (imports)
                         {
                             using var ms = new MemoryStream();
-                            ar.CopyFileToStream(ms, fileEntry.NameHash64, false);
+                            fileEntry.Extract(ms, false);
                             if (!_wolvenkitFileService.TryReadRed4File(ms, out var cr2w))
                             {
                                 return;
@@ -214,7 +211,7 @@ namespace CP77Tools.Tasks
                             if (!string.IsNullOrEmpty(fileEntry.FileName) && fileEntry.FileName.Contains(".xbm"))
                             {
                                 using var ms = new MemoryStream();
-                                ar.CopyFileToStream(ms, fileEntry.NameHash64, false);
+                                fileEntry.Extract(ms, false);
                                 var cr2w = _wolvenkitFileService.ReadRed4File(ms);
                                 if (cr2w == null || cr2w.RootChunk is not CBitmapTexture xbm || xbm.RenderTextureResource.RenderResourceBlobPC.Chunk is not rendIRenderTextureBlob blob)
                                 {

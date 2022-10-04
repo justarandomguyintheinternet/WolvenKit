@@ -61,6 +61,8 @@ namespace WolvenKit.RED4.CR2W.Archive
 
         public override SourceCache<IGameArchive, string> ModArchives { get; set; } = new(x => x.ArchiveAbsolutePath);
 
+        public override FileSystemArchive ProjectArchive { get; set; }
+
 
         public IObservable<IChangeSet<IGameArchive, string>> ConnectArchives() => Archives.Connect();
 

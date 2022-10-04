@@ -32,7 +32,7 @@ namespace WolvenKit.Modkit.RED4
             {
                 var hash = FNV1A64HashAlgorithm.HashString(blob.BaseMesh.DepotPath);
                 var meshStream = new MemoryStream();
-                foreach (var ar in args.Archives)
+                foreach (var ar in _archiveManager.GetArchives())
                 {
                     if (ar.Files.TryGetValue(hash, out var gameFile))
                     {

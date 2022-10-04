@@ -329,13 +329,12 @@ namespace WolvenKit.Modkit.RED4
                     // WolvenKit.CLI does not use (i.e. set) the App's settings configuration, resulting in a null value for
                     // settings.Get<MorphTargetExportArgs>().ModFolderPath.  In the context of the CLI, output directory
                     // (i.e. -o argument) can be used to provide the correct absolute pathname.
-                    var modFolderPath = settings.Get<MorphTargetExportArgs>().ModFolderPath;
-                    modFolderPath ??= rawOutDir.FullName;
-                    return ExportMorphTargets(cr2wStream, outfile, settings.Get<MorphTargetExportArgs>().Archives, modFolderPath, settings.Get<MorphTargetExportArgs>().IsBinary);
+                    _archiveManager.ProjectArchive ??= new FileSystemArchive(rawOutDir.FullName);
+                    return ExportMorphTargets(cr2wStream, outfile, settings.Get<MorphTargetExportArgs>().IsBinary);
                 case ECookedFileFormat.anims:
                     try
                     {
-                        return ExportAnim(cr2wStream, settings.Get<AnimationExportArgs>().Archives, outfile, settings.Get<AnimationExportArgs>().IsBinary, settings.Get<AnimationExportArgs>().incRootMotion);
+                        return ExportAnim(cr2wStream, outfile, settings.Get<AnimationExportArgs>().IsBinary, settings.Get<AnimationExportArgs>().incRootMotion);
                     }
                     catch (Exception e)
                     {
@@ -472,11 +471,11 @@ namespace WolvenKit.Modkit.RED4
             return false;
         }
 
-        private static bool HandleOpus(OpusExportArgs opusExportArgs)
+        private bool HandleOpus(OpusExportArgs opusExportArgs)
         {
             OpusTools opusTools = new(
                 opusExportArgs.SoundbanksArchive,
-                opusExportArgs.ModFolderPath,
+                _archiveManager.ProjectArchive.ArchiveAbsolutePath,
                 opusExportArgs.RawFolderPath,
                 opusExportArgs.UseMod);
 
@@ -598,7 +597,7 @@ namespace WolvenKit.Modkit.RED4
                     return _meshTools.ExportMesh(cr2wStream, cr2wFileName, meshargs.LodFilter, meshargs.isGLBinary);
 
                 case MeshExportType.WithMaterials:
-                    return ExportMeshWithMaterials(cr2wStream, cr2wFileName, meshargs.Archives, meshargs.MaterialRepo,
+                    return ExportMeshWithMaterials(cr2wStream, cr2wFileName, meshargs.MaterialRepo,
                         meshargs.MaterialUncookExtension, meshargs.isGLBinary, meshargs.LodFilter);
 
                 case MeshExportType.WithRig:

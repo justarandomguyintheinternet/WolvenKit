@@ -1,3 +1,5 @@
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using WolvenKit.Common;
@@ -84,6 +86,47 @@ namespace CP77Tools.Tasks
             _animationExportArgs = animationExportArgs;
         }
 
+        private bool LoadArchives(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                _loggerService.Warning("Please fill in an input path.");
+                return false;
+            }
 
+            var inputFileInfo = new FileInfo(path);
+            var inputDirInfo = new DirectoryInfo(path);
+
+            if (!inputFileInfo.Exists && !inputDirInfo.Exists)
+            {
+                _loggerService.Warning("Input path does not exist.");
+                return false;
+            }
+
+            if (inputFileInfo.Exists && inputFileInfo.Extension != ".archive")
+            {
+                _loggerService.Warning("Input file is not an .archive.");
+                return false;
+            }
+            else if (inputDirInfo.Exists && inputDirInfo.GetFiles().All(_ => _.Extension != ".archive"))
+            {
+                _loggerService.Warning("No .archive file to process in the input directory");
+                return false;
+            }
+
+            var isDirectory = !inputFileInfo.Exists;
+            var basedir = inputFileInfo.Exists ? new FileInfo(path).Directory : inputDirInfo;
+
+            if (isDirectory)
+            {
+                _archiveManager.LoadFromFolder(basedir);
+            }
+            else
+            {
+                _archiveManager.LoadArchive(inputFileInfo.FullName);
+            }
+
+            return true;
+        }
     }
 }

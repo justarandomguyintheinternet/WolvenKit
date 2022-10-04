@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using WolvenKit.Common.Services;
 using WolvenKit.Modkit.RED4;
+using WolvenKit.RED4.Archive;
 
 namespace CP77Tools.Tasks
 {
@@ -67,15 +67,13 @@ namespace CP77Tools.Tasks
             if (isDirectory)
             {
                 _archiveManager.LoadFromFolder(basedir);
-                // TODO: use the manager here?
-                archiveFileInfos = _archiveManager.Archives.Items.Select(_ => new FileInfo(_.ArchiveAbsolutePath)).ToList();
             }
             else
             {
-                archiveFileInfos = new List<FileInfo> { inputFileInfo };
+                _archiveManager.LoadArchive(inputFileInfo.FullName);
             }
 
-            foreach (var fileInfo in archiveFileInfos)
+            foreach (var ar in _archiveManager.Archives.Items)
             {
                 // get outdirectory
                 DirectoryInfo outDir;
@@ -92,9 +90,6 @@ namespace CP77Tools.Tasks
                     }
                 }
 
-                // read archive
-                var ar = _wolvenkitFileService.ReadRed4Archive(fileInfo.FullName, _hashService);
-
                 var isHash = ulong.TryParse(hash, out var hashNumber);
 
                 // run
@@ -105,7 +100,7 @@ namespace CP77Tools.Tasks
                     _loggerService.Info($"Extracing all files from the hashlist ({hashlist.Count()}hashes) ...");
                     foreach (var hashNum in hashlist)
                     {
-                        var r = ModTools.ExtractSingle(ar, hashNum, outDir, DEBUG_decompress);
+                        var r = ModTools.ExtractSingle((ICyberGameArchive)ar, hashNum, outDir, DEBUG_decompress);
                         if (r > 0)
                         {
                             _loggerService.Success($" {ar.ArchiveAbsolutePath}: Extracted one file: {hashNum}");
@@ -120,7 +115,7 @@ namespace CP77Tools.Tasks
                 }
                 else if (isHash && hashNumber != 0)
                 {
-                    var r = ModTools.ExtractSingle(ar, hashNumber, outDir, DEBUG_decompress);
+                    var r = ModTools.ExtractSingle((ICyberGameArchive)ar, hashNumber, outDir, DEBUG_decompress);
                     if (r > 0)
                     {
                         _loggerService.Success($" {ar.ArchiveAbsolutePath}: Extracted one file: {hashNumber}");
@@ -132,7 +127,7 @@ namespace CP77Tools.Tasks
                 }
                 else
                 {
-                    _modTools.ExtractAll(ar, outDir, pattern, regex, DEBUG_decompress);
+                    _modTools.ExtractAll((ICyberGameArchive)ar, outDir, pattern, regex, DEBUG_decompress);
                 }
             }
 

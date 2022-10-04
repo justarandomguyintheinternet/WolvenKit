@@ -1,13 +1,12 @@
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using WolvenKit.Common;
+using System;
 using WolvenKit.Common.FNV1A;
+using WolvenKit.Common;
 using WolvenKit.Core.Interfaces;
-using WolvenKit.RED4.Archive;
 
-namespace WolvenKit.App.Models;
+namespace WolvenKit.RED4.Archive;
 
 public class FileSystemArchive : ICyberGameArchive
 {
@@ -47,6 +46,8 @@ public class FileSystemArchive : ICyberGameArchive
         {
             throw new ArgumentException(nameof(modDirectory));
         }
+
+        ArchiveAbsolutePath = modDirectory;
 
         foreach (var filePath in Directory.EnumerateFiles(modDirectory, "*", SearchOption.AllDirectories))
         {

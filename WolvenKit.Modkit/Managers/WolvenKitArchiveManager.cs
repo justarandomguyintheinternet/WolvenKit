@@ -22,6 +22,8 @@ namespace WolvenKit.Common.Model
 
         public abstract SourceCache<IGameArchive, string> ModArchives { get; set; }
 
+        public abstract FileSystemArchive ProjectArchive { get; set; }
+
 
         public RedFileSystemModel RootNode { get; set; }
 
@@ -35,6 +37,8 @@ namespace WolvenKit.Common.Model
 
         public bool IsModBrowserActive { get; set; }
 
+        public bool HasArchives => ProjectArchive != null || ModArchives.Count != 0 || Archives.Count != 0;
+
         #endregion
 
         public abstract void LoadGameArchives(FileInfo executable, bool rebuildtree = true);
@@ -44,6 +48,27 @@ namespace WolvenKit.Common.Model
         public abstract void LoadModArchive(string filename);
 
         public abstract void LoadModsArchives(DirectoryInfo[] modsDir);
+
+        public IEnumerable<IGameArchive> GetArchives(bool includeMods = true, bool includeProject = true)
+        {
+            if (includeProject && ProjectArchive != null)
+            {
+                yield return ProjectArchive;
+            }
+
+            if (includeMods)
+            {
+                foreach (var modArchive in ModArchives.Items)
+                {
+                    yield return modArchive;
+                }
+            }
+
+            foreach (var archive in Archives.Items)
+            {
+                yield return archive;
+            }
+        }
 
         protected static string GetModFolder(string path)
         {

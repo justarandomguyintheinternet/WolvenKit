@@ -83,13 +83,11 @@ namespace CP77Tools.Tasks
                 exportArgs.Get<MlmaskExportArgs>().UncookExtension = uext.Value;
             }
 
+            // TODO: Check this
             var archiveDepot = exportArgs.Get<MeshExportArgs>().ArchiveDepot;
             if (!string.IsNullOrEmpty(archiveDepot) && Directory.Exists(archiveDepot))
             {
                 _archiveManager.LoadFromFolder(new DirectoryInfo(archiveDepot));
-                exportArgs.Get<MeshExportArgs>().Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-                exportArgs.Get<MorphTargetExportArgs>().Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-                exportArgs.Get<AnimationExportArgs>().Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
             }
             else
             {
@@ -97,9 +95,6 @@ namespace CP77Tools.Tasks
                 if (!string.IsNullOrEmpty(archiveDepot) && Directory.Exists(archiveDepot))
                 {
                     _archiveManager.LoadFromFolder(new DirectoryInfo(archiveDepot));
-                    exportArgs.Get<MeshExportArgs>().Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-                    exportArgs.Get<MorphTargetExportArgs>().Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-                    exportArgs.Get<AnimationExportArgs>().Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
                 }
                 else
                 {
@@ -107,25 +102,20 @@ namespace CP77Tools.Tasks
                     if (!string.IsNullOrEmpty(archiveDepot) && Directory.Exists(archiveDepot))
                     {
                         _archiveManager.LoadFromFolder(new DirectoryInfo(archiveDepot));
-                        exportArgs.Get<MeshExportArgs>().Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-                        exportArgs.Get<MorphTargetExportArgs>().Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
-                        exportArgs.Get<AnimationExportArgs>().Archives = _archiveManager.Archives.Items.Cast<ICyberGameArchive>().ToList();
                     }
                 }
             }
 
-            List<FileInfo> archiveFileInfos;
             if (isDirectory)
             {
                 _archiveManager.LoadFromFolder(basedir);
-                archiveFileInfos = _archiveManager.Archives.Items.Select(_ => new FileInfo(_.ArchiveAbsolutePath)).ToList();
             }
             else
             {
-                archiveFileInfos = new List<FileInfo> { inputFileInfo };
+                _archiveManager.LoadArchive(inputFileInfo.FullName);
             }
 
-            foreach (var fileInfo in archiveFileInfos)
+            foreach (var ar in _archiveManager.Archives.Items)
             {
                 // get outdirectory
                 DirectoryInfo outDir;
@@ -156,18 +146,15 @@ namespace CP77Tools.Tasks
                     }
                 }
 
-                // read archive
-                var ar = _wolvenkitFileService.ReadRed4Archive(fileInfo.FullName, _hashService);
-
                 // run
                 if (hash != 0)
                 {
-                    _modTools.UncookSingle(ar, hash, outDir, exportArgs, rawOutDirInfo, forcebuffers, serialize ?? false);
+                    _modTools.UncookSingle((ICyberGameArchive)ar, hash, outDir, exportArgs, rawOutDirInfo, forcebuffers, serialize ?? false);
                     _loggerService.Success($" {ar.ArchiveAbsolutePath}: Uncooked one file: {hash}");
                 }
                 else
                 {
-                    _modTools.UncookAll(ar, outDir, exportArgs, unbundle, pattern, regex, rawOutDirInfo, forcebuffers, serialize ?? false);
+                    _modTools.UncookAll((ICyberGameArchive)ar, outDir, exportArgs, unbundle, pattern, regex, rawOutDirInfo, forcebuffers, serialize ?? false);
                 }
             }
 

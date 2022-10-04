@@ -34,9 +34,6 @@ namespace WolvenKit.Common.Model.Arguments
         public Archive SoundbanksArchive { get; set; } = new();
 
         [Browsable(false)]
-        public string ModFolderPath { get; set; }
-
-        [Browsable(false)]
         public string RawFolderPath { get; set; }
 
         [Category("Export Settings")]
@@ -60,18 +57,11 @@ namespace WolvenKit.Common.Model.Arguments
         public bool IsBinary { get; set; } = true;
 
         /// <summary>
-        /// List of Archives for Morphtarget Export.
-        /// </summary>
-        [Browsable(false)]
-        public List<ICyberGameArchive> Archives { get; set; } = new();
-        /// <summary>
         /// Archive path for Console Morphtarget Export.
         /// </summary>
         [Browsable(false)]
         public string ArchiveDepot { get; set; }
 
-        [Browsable(false)]
-        public string ModFolderPath { get; set; }
         /// <summary>
         /// String Override to display info in datagrid.
         /// </summary>
@@ -151,11 +141,7 @@ namespace WolvenKit.Common.Model.Arguments
         [Category("Export Type")]
         [Display(Name = "Export Type")]
         public EntityExportType ExportType { get; set; } = EntityExportType.Json;
-        /// <summary>
-        /// List of Archives for Gltf Mesh Export.
-        /// </summary>
-        [Browsable(false)]
-        public List<ICyberGameArchive> Archives { get; set; } = new();
+
         /// <summary>
         /// String Override to display info in datagrid.
         /// </summary>
@@ -229,12 +215,6 @@ namespace WolvenKit.Common.Model.Arguments
         public EUncookExtension MaterialUncookExtension { get; set; } = EUncookExtension.png;
 
         /// <summary>
-        /// List of Archives for WithMaterials Mesh Export.
-        /// </summary>
-        [Browsable(false)]
-        public List<ICyberGameArchive> Archives { get; set; } = new();
-
-        /// <summary>
         /// Optional archive path for WithMaterials Mesh Export.
         /// </summary>
         [Browsable(false)]
@@ -295,15 +275,11 @@ namespace WolvenKit.Common.Model.Arguments
         public bool incRootMotion { get; set; } = false;
 
         /// <summary>
-        /// List of Archives for Animations Export.
-        /// </summary>
-        [Browsable(false)]
-        public List<ICyberGameArchive> Archives { get; set; } = new();
-        /// <summary>
         /// Archive path for Console Anims Export.
         /// </summary>
         [Browsable(false)]
         public string ArchiveDepot { get; set; }
+
         /// <summary>
         /// String Override to display info in datagrid.
         /// </summary>
